@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shop — FORGED Apparel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #0a0a0a;
+      --white: #f5f0eb;
+      --red: #e8291c;
+      --gray: #1c1c1c;
+      --mid: #3a3a3a;
+      --light: #888;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--black); color: var(--white); font-family: 'Barlow', sans-serif; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .nav-logo {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 2rem;
+      letter-spacing: 0.12em; color: var(--white); text-decoration: none;
+    }
+    .nav-logo span { color: var(--red); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.95rem;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--white); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--red); }
+    .nav-cart {
+      background: var(--red); color: var(--white); text-decoration: none;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.9rem; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.6rem 1.4rem; transition: background 0.2s;
+    }
+    .nav-cart:hover { background: #c4200f; }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 10rem 6rem 4rem;
+      background: var(--gray);
+      position: relative; overflow: hidden;
+    }
+    .page-header::before {
+      content: 'SHOP';
+      position: absolute; right: -2rem; top: 50%; transform: translateY(-50%);
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 20rem; color: rgba(255,255,255,0.03); pointer-events: none;
+    }
+    .breadcrumb {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.8rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--light); margin-bottom: 1rem;
+    }
+    .breadcrumb a { color: var(--red); text-decoration: none; }
+    .page-title {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: clamp(3rem, 6vw, 6rem); text-transform: uppercase; line-height: 1;
+    }
+    .page-subtitle { color: var(--light); margin-top: 1rem; font-size: 1rem; }
+
+    /* SHOP LAYOUT */
+    .shop-layout {
+      display: grid; grid-template-columns: 260px 1fr;
+      gap: 0; min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      background: var(--gray); padding: 3rem 2rem;
+      border-right: 1px solid var(--mid);
+      position: sticky; top: 72px; height: calc(100vh - 72px); overflow-y: auto;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--mid); border-radius: 2px; }
+    .filter-group { margin-bottom: 2.5rem; }
+    .filter-title {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.75rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--light); margin-bottom: 1.2rem;
+      padding-bottom: 0.8rem; border-bottom: 1px solid var(--mid);
+    }
+    .filter-options { display: flex; flex-direction: column; gap: 0.6rem; }
+    .filter-opt {
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; padding: 0.5rem 0.8rem; transition: background 0.2s;
+    }
+    .filter-opt:hover { background: rgba(255,255,255,0.04); }
+    .filter-opt.active { background: rgba(232,41,28,0.1); }
+    .filter-opt-label {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.9rem; letter-spacing: 0.05em;
+    }
+    .filter-opt.active .filter-opt-label { color: var(--red); }
+    .filter-count {
+      font-size: 0.75rem; color: var(--light);
+      background: var(--mid); padding: 0.15rem 0.5rem;
+    }
+    .price-range { display: flex; flex-direction: column; gap: 1rem; }
+    .range-slider {
+      -webkit-appearance: none; width: 100%; height: 3px;
+      background: var(--mid); outline: none;
+    }
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 18px; height: 18px;
+      background: var(--red); cursor: pointer; border-radius: 0;
+    }
+    .range-labels { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--light); }
+    .color-swatches { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .swatch {
+      width: 28px; height: 28px; border-radius: 0; cursor: pointer;
+      border: 2px solid transparent; transition: border-color 0.2s;
+    }
+    .swatch.active, .swatch:hover { border-color: var(--white); }
+    .size-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .size-pill {
+      padding: 0.4rem 0.8rem; border: 1px solid var(--mid); cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.85rem; letter-spacing: 0.05em; transition: all 0.2s;
+    }
+    .size-pill:hover, .size-pill.active { background: var(--red); border-color: var(--red); }
+
+    /* PRODUCT AREA */
+    .product-area { padding: 2rem 3rem; }
+    .product-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--mid);
+    }
+    .product-count {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.9rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--light);
+    }
+    .product-count span { color: var(--white); }
+    .toolbar-right { display: flex; align-items: center; gap: 1.5rem; }
+    .sort-select {
+      background: var(--gray); border: 1px solid var(--mid); color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.85rem; letter-spacing: 0.1em; padding: 0.5rem 1rem;
+      outline: none; cursor: pointer;
+    }
+    .view-toggle { display: flex; gap: 4px; }
+    .view-btn {
+      width: 36px; height: 36px; background: var(--gray); border: 1px solid var(--mid);
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      font-size: 0.8rem; transition: all 0.2s;
+    }
+    .view-btn.active, .view-btn:hover { background: var(--red); border-color: var(--red); }
+
+    /* ACTIVE FILTERS */
+    .active-filters {
+      display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1.5rem;
+    }
+    .active-filter {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: rgba(232,41,28,0.12); border: 1px solid rgba(232,41,28,0.3);
+      padding: 0.3rem 0.8rem;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red);
+    }
+    .active-filter-x { cursor: pointer; opacity: 0.7; }
+    .active-filter-x:hover { opacity: 1; }
+
+    /* PRODUCTS GRID */
+    .products-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2px; background: var(--mid);
+    }
+    .products-grid.list-view {
+      grid-template-columns: 1fr; gap: 2px;
+    }
+
+    /* PRODUCT CARD */
+    .product-card {
+      background: var(--black); cursor: pointer; position: relative;
+      transition: background 0.2s;
+    }
+    .product-card:hover { background: #111; }
+    .product-img {
+      aspect-ratio: 3/4; background: var(--gray);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .product-img-bg {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 10rem; color: rgba(255,255,255,0.04);
+      transition: transform 0.5s ease;
+    }
+    .product-card:hover .product-img-bg { transform: scale(1.08); }
+    .product-icon {
+      font-size: 5rem; position: relative; z-index: 2;
+      transition: transform 0.4s ease;
+    }
+    .product-card:hover .product-icon { transform: scale(1.08) translateY(-5px); }
+    .product-badges {
+      position: absolute; top: 1rem; left: 1rem;
+      display: flex; flex-direction: column; gap: 0.4rem;
+    }
+    .badge {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+    }
+    .badge-new { background: var(--white); color: var(--black); }
+    .badge-sale { background: var(--red); color: var(--white); }
+    .badge-sold { background: var(--mid); color: var(--light); }
+    .product-wishlist {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 36px; height: 36px; background: rgba(10,10,10,0.8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; cursor: pointer; opacity: 0; transition: opacity 0.2s;
+    }
+    .product-card:hover .product-wishlist { opacity: 1; }
+    .product-quick-add {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: var(--red); padding: 0.8rem;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase;
+      text-align: center; transform: translateY(100%); transition: transform 0.25s ease;
+    }
+    .product-card:hover .product-quick-add { transform: translateY(0); }
+
+    .product-info { padding: 1.5rem 1.5rem 2rem; }
+    .product-category {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--light); margin-bottom: 0.4rem;
+    }
+    .product-name {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 1.3rem; text-transform: uppercase; line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+    .product-rating {
+      display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.8rem;
+    }
+    .stars { color: var(--red); font-size: 0.75rem; letter-spacing: 0.05em; }
+    .rating-count { font-size: 0.75rem; color: var(--light); }
+    .product-price {
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .price-current {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.4rem;
+    }
+    .price-old {
+      font-size: 0.95rem; color: var(--light); text-decoration: line-through;
+    }
+    .price-save {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.75rem; letter-spacing: 0.1em; color: var(--red);
+    }
+    .product-colors { display: flex; gap: 0.4rem; margin-top: 0.8rem; }
+    .product-color-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.1);
+    }
+
+    /* List view card */
+    .products-grid.list-view .product-card {
+      display: grid; grid-template-columns: 180px 1fr auto;
+      align-items: center;
+    }
+    .products-grid.list-view .product-img { aspect-ratio: 1; }
+    .products-grid.list-view .product-quick-add {
+      position: static; transform: none; padding: 1rem 2rem;
+      white-space: nowrap; align-self: center; margin-right: 1.5rem;
+    }
+
+    /* PAGINATION */
+    .pagination {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.5rem; padding: 3rem 0 2rem;
+    }
+    .page-btn {
+      width: 44px; height: 44px; background: var(--gray); border: 1px solid var(--mid);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
+      color: var(--white); text-decoration: none;
+    }
+    .page-btn:hover, .page-btn.active { background: var(--red); border-color: var(--red); }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      z-index: 1000; display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--gray); max-width: 900px; width: 90vw;
+      max-height: 90vh; overflow-y: auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      transform: translateY(20px); transition: transform 0.3s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-img {
+      background: var(--black); aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8rem; position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem;
+      width: 36px; height: 36px; background: var(--mid);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.1rem; z-index: 10;
+      transition: background 0.2s;
+    }
+    .modal-close:hover { background: var(--red); }
+    .modal-content { padding: 3rem 2.5rem; }
+    .modal-category {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 0.6rem;
+    }
+    .modal-title {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 2.2rem; text-transform: uppercase; line-height: 1; margin-bottom: 1rem;
+    }
+    .modal-price {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+      font-size: 2rem; margin-bottom: 1.5rem;
+    }
+    .modal-price del { font-size: 1.3rem; color: var(--light); margin-right: 0.8rem; }
+    .modal-price .sale { color: var(--red); }
+    .modal-desc { color: var(--light); line-height: 1.8; font-size: 0.9rem; margin-bottom: 2rem; }
+    .modal-label {
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--light); margin-bottom: 0.8rem;
+    }
+    .modal-sizes { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .modal-size {
+      padding: 0.5rem 1rem; border: 1px solid var(--mid); cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .modal-size:hover, .modal-size.active { background: var(--red); border-color: var(--red); }
+    .modal-qty { display: flex; align-items: center; gap: 0; margin-bottom: 2rem; }
+    .qty-btn {
+      width: 44px; height: 44px; background: var(--mid); border: none;
+      color: var(--white); font-size: 1.2rem; cursor: pointer; transition: background 0.2s;
+    }
+    .qty-btn:hover { background: var(--red); }
+    .qty-input {
+      width: 60px; height: 44px; background: var(--black); border: 1px solid var(--mid);
+      border-left: none; border-right: none;
+      color: var(--white); text-align: center;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.1rem;
+      outline: none;
+    }
+    .modal-cta { display: flex; gap: 1rem; }
+    .btn-primary {
+      background: var(--red); color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.95rem; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 1rem 2rem; border: 2px solid var(--red); cursor: pointer;
+      text-decoration: none; transition: all 0.2s; flex: 1; text-align: center;
+    }
+    .btn-primary:hover { background: transparent; color: var(--red); }
+    .btn-outline {
+      background: transparent; color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+      font-size: 0.95rem; letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 1rem 1.5rem; border: 2px solid var(--mid); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--white); }
+
+    /* FOOTER */
+    footer {
+      background: var(--black); border-top: 1px solid var(--mid);
+      padding: 2rem 6rem; display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-logo { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.5rem; }
+    .footer-logo span { color: var(--red); }
+    .footer-copy { font-size: 0.8rem; color: var(--light); }
+
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .page-header { padding: 8rem 2rem 3rem; }
+      .shop-layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; height: auto; }
+      .product-area { padding: 1.5rem; }
+      .products-grid { grid-template-columns: repeat(2,1fr); }
+      .modal { grid-template-columns: 1fr; }
+      .modal-img { aspect-ratio: 16/9; }
+      footer { padding: 2rem; flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="index.html">FOR<span>GED</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="products.html" class="active">Shop</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <a href="checkout.html" class="nav-cart" id="cart-btn">🛒 Cart (<span id="cart-count">0</span>)</a>
+  </nav>
+
+  <div class="page-header">
+    <div class="breadcrumb"><a href="index.html">Home</a> / Shop</div>
+    <h1 class="page-title">All Products</h1>
+    <p class="page-subtitle">52 performance pieces. Zero compromises.</p>
+  </div>
+
+  <div class="shop-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="filter-group">
+        <div class="filter-title">Category</div>
+        <div class="filter-options">
+          <div class="filter-opt active" onclick="filterCategory('all', this)">
+            <span class="filter-opt-label">All Products</span>
+            <span class="filter-count">52</span>
+          </div>
+          <div class="filter-opt" onclick="filterCategory('tops', this)">
+            <span class="filter-opt-label">Tops & Tees</span>
+            <span class="filter-count">24</span>
+          </div>
+          <div class="filter-opt" onclick="filterCategory('shorts', this)">
+            <span class="filter-opt-label">Shorts</span>
+            <span class="filter-count">16</span>
+          </div>
+          <div class="filter-opt" onclick="filterCategory('jackets', this)">
+            <span class="filter-opt-label">Jackets</span>
+            <span class="filter-count">12</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Price Range</div>
+        <div class="price-range">
+          <input type="range" class="range-slider" min="499" max="9999" value="9999" oninput="updatePrice(this.value)">
+          <div class="range-labels">
+            <span>₹499</span>
+            <span id="price-label">₹9,999</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Color</div>
+        <div class="color-swatches">
+          <div class="swatch active" style="background:#0a0a0a;border:2px solid #888;" title="Black"></div>
+          <div class="swatch" style="background:#f5f0eb;" title="White"></div>
+          <div class="swatch" style="background:#e8291c;" title="Red"></div>
+          <div class="swatch" style="background:#1a2e4a;" title="Navy"></div>
+          <div class="swatch" style="background:#2c4a2e;" title="Forest"></div>
+          <div class="swatch" style="background:#3a3a3a;" title="Charcoal"></div>
+          <div class="swatch" style="background:#c8a45a;" title="Sand"></div>
+          <div class="swatch" style="background:#7a1f8a;" title="Purple"></div>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Size</div>
+        <div class="size-pills">
+          <div class="size-pill" onclick="toggleSize(this)">XS</div>
+          <div class="size-pill active" onclick="toggleSize(this)">S</div>
+          <div class="size-pill active" onclick="toggleSize(this)">M</div>
+          <div class="size-pill" onclick="toggleSize(this)">L</div>
+          <div class="size-pill" onclick="toggleSize(this)">XL</div>
+          <div class="size-pill" onclick="toggleSize(this)">2XL</div>
+          <div class="size-pill" onclick="toggleSize(this)">3XL</div>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-title">Collection</div>
+        <div class="filter-options">
+          <div class="filter-opt" onclick="toggleFilter(this)">
+            <span class="filter-opt-label">SS25 Drop</span>
+            <span class="filter-count">18</span>
+          </div>
+          <div class="filter-opt" onclick="toggleFilter(this)">
+            <span class="filter-opt-label">Core Range</span>
+            <span class="filter-count">28</span>
+          </div>
+          <div class="filter-opt" onclick="toggleFilter(this)">
+            <span class="filter-opt-label">Sale Items</span>
+            <span class="filter-count">6</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" style="width:100%;border:none;cursor:pointer;margin-top:1rem;" onclick="resetFilters()">
+        Clear All Filters
+      </button>
+    </aside>
+
+    <!-- PRODUCT AREA -->
+    <main class="product-area">
+      <div class="product-toolbar">
+        <div class="product-count">Showing <span id="showing-count">12</span> of <span>52</span> products</div>
+        <div class="toolbar-right">
+          <select class="sort-select" onchange="sortProducts(this.value)">
+            <option value="">Sort: Featured</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="newest">Newest First</option>
+            <option value="rating">Best Rated</option>
+          </select>
+          <div class="view-toggle">
+            <div class="view-btn active" id="grid-btn" onclick="setView('grid')" title="Grid View">⊞</div>
+            <div class="view-btn" id="list-btn" onclick="setView('list')" title="List View">☰</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="active-filters" id="active-filters">
+        <div class="active-filter">S <span class="active-filter-x" onclick="removeFilter(this)">✕</span></div>
+        <div class="active-filter">M <span class="active-filter-x" onclick="removeFilter(this)">✕</span></div>
+      </div>
+
+      <div class="products-grid" id="products-grid">
+        <!-- Products injected by JS -->
+      </div>
+
+      <div class="pagination">
+        <a class="page-btn" href="#">‹</a>
+        <a class="page-btn active" href="#">1</a>
+        <a class="page-btn" href="#">2</a>
+        <a class="page-btn" href="#">3</a>
+        <a class="page-btn" href="#">4</a>
+        <a class="page-btn" href="#">›</a>
+      </div>
+    </main>
+  </div>
+
+  <!-- PRODUCT MODAL -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <div class="modal-img" id="modal-img">
+        <div class="modal-close" onclick="closeModal()">✕</div>
+        <div id="modal-icon" style="font-size:8rem;position:relative;z-index:2;"></div>
+      </div>
+      <div class="modal-content">
+        <div class="modal-category" id="modal-cat"></div>
+        <h2 class="modal-title" id="modal-name"></h2>
+        <div class="modal-price" id="modal-price"></div>
+        <p class="modal-desc" id="modal-desc"></p>
+        <div class="modal-label">Select Size</div>
+        <div class="modal-sizes" id="modal-sizes">
+          <div class="modal-size" onclick="selectSize(this)">XS</div>
+          <div class="modal-size active" onclick="selectSize(this)">S</div>
+          <div class="modal-size" onclick="selectSize(this)">M</div>
+          <div class="modal-size" onclick="selectSize(this)">L</div>
+          <div class="modal-size" onclick="selectSize(this)">XL</div>
+          <div class="modal-size" onclick="selectSize(this)">XXL</div>
+        </div>
+        <div class="modal-label">Quantity</div>
+        <div class="modal-qty">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <input class="qty-input" type="number" value="1" min="1" max="10" id="qty-input">
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+        <div class="modal-cta">
+          <button class="btn-primary" onclick="addToCartFromModal()">Add to Cart</button>
+          <a href="checkout.html" class="btn-outline">Buy Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">FOR<span>GED</span></div>
+    <div class="footer-copy">© 2025 FORGED Apparel. All rights reserved.</div>
+    <div>
+      <a href="index.html" style="color:var(--light);font-size:0.85rem;margin-right:1.5rem;text-decoration:none;">Home</a>
+      <a href="contact.html" style="color:var(--light);font-size:0.85rem;text-decoration:none;">Contact</a>
+    </div>
+  </footer>
+
+  <script>
+    const products = [
+      { id:1, name:"Iron Vault Compression Tee", category:"tops", icon:"👕", price:2799, oldPrice:3999, rating:4.9, reviews:148, badge:"sale", colors:["#0a0a0a","#e8291c","#1a2e4a"], desc:"Our flagship compression tee engineered with DryForge™ X fabric. Featherweight, breathable, and built for every rep." },
+      { id:2, name:"Apex Training Tank", category:"tops", icon:"🦺", price:1999, oldPrice:null, rating:4.8, reviews:96, badge:"new", colors:["#0a0a0a","#f5f0eb","#3a3a3a"], desc:"Relaxed-fit tank with racerback cut for maximum shoulder mobility. Moisture-wicking DryForge™ blend." },
+      { id:3, name:"Combat Flex Shorts", category:"shorts", icon:"🩲", price:3299, oldPrice:null, rating:4.9, reviews:204, badge:"new", colors:["#0a0a0a","#1a2e4a","#e8291c"], desc:"5-inch inseam training shorts with built-in compression liner. Quad-stretch fabric for unrestricted movement." },
+      { id:4, name:"StormShield Run Jacket", category:"jackets", icon:"🧥", price:6499, oldPrice:7999, rating:4.7, reviews:67, badge:"sale", colors:["#0a0a0a","#f5f0eb"], desc:"Water-resistant performance jacket with reflective detailing. Packable design fits in its own pocket." },
+      { id:5, name:"Forge Hoodie", category:"jackets", icon:"🧶", price:4999, oldPrice:null, rating:4.8, reviews:112, badge:"new", colors:["#0a0a0a","#3a3a3a","#2c4a2e"], desc:"Heavyweight French terry hoodie with kangaroo pocket. Perfect for warm-ups and post-workout recovery." },
+      { id:6, name:"Zero-G Leggings", category:"shorts", icon:"🩱", price:3799, oldPrice:4499, rating:5.0, reviews:89, badge:"sale", colors:["#0a0a0a","#7a1f8a","#e8291c"], desc:"High-waist compression leggings with 4-way stretch. Squat-proof fabric with phone pocket." },
+      { id:7, name:"Velocity Long Sleeve", category:"tops", icon:"👔", price:2499, oldPrice:null, rating:4.6, reviews:53, badge:null, colors:["#0a0a0a","#1a2e4a","#2c4a2e"], desc:"UPF 50+ long sleeve training top for outdoor athletes. Flatlock seams prevent chafing." },
+      { id:8, name:"Power Shorts 7\"", category:"shorts", icon:"🩳", price:2799, oldPrice:null, rating:4.7, reviews:134, badge:null, colors:["#0a0a0a","#3a3a3a","#c8a45a"], desc:"Versatile 7-inch training shorts with deep zip pockets. Quick-dry fabric dries in under 30 minutes." },
+      { id:9, name:"Tactical Windbreaker", category:"jackets", icon:"🥋", price:5499, oldPrice:6999, rating:4.8, reviews:44, badge:"sale", colors:["#0a0a0a","#1a2e4a"], desc:"Ultralight windbreaker with mesh liner. Blocks wind without trapping heat during intense sessions." },
+      { id:10, name:"Deadlift Crop Top", category:"tops", icon:"✂️", price:1799, oldPrice:null, rating:4.9, reviews:178, badge:"new", colors:["#0a0a0a","#e8291c","#f5f0eb"], desc:"Cropped training tee with ribbed hem. Designed for Olympic lifts with complete torso freedom." },
+      { id:11, name:"Sprint Shorts 3\"", category:"shorts", icon:"⚡", price:2299, oldPrice:null, rating:4.7, reviews:71, badge:null, colors:["#e8291c","#0a0a0a","#f5f0eb"], desc:"Minimal 3-inch training short for sprinters and HIIT athletes. Zero restriction, maximum speed." },
+      { id:12, name:"Recovery Zip Fleece", category:"jackets", icon:"🫧", price:5999, oldPrice:null, rating:4.6, reviews:38, badge:"new", colors:["#3a3a3a","#0a0a0a","#2c4a2e"], desc:"Brushed-interior zip fleece for post-workout recovery. Oversized fit designed for layering." },
+    ];
+
+    let cartCount = 0;
+    let currentView = 'grid';
+    let currentProduct = null;
+
+    function renderProducts(list) {
+      const grid = document.getElementById('products-grid');
+      grid.innerHTML = list.map(p => `
+        <div class="product-card" onclick="openModal(${p.id})">
+          <div class="product-img">
+            <div class="product-img-bg">${p.name.split(' ')[0].substring(0,2).toUpperCase()}</div>
+            <div class="product-icon">${p.icon}</div>
+            <div class="product-badges">
+              ${p.badge === 'new' ? '<span class="badge badge-new">New</span>' : ''}
+              ${p.badge === 'sale' ? '<span class="badge badge-sale">Sale</span>' : ''}
+            </div>
+            <div class="product-wishlist">♡</div>
+            <div class="product-quick-add">Quick Add +</div>
+          </div>
+          <div class="product-info">
+            <div class="product-category">${p.category === 'tops' ? 'Tops & Tees' : p.category.charAt(0).toUpperCase()+p.category.slice(1)}</div>
+            <div class="product-name">${p.name}</div>
+            <div class="product-rating">
+              <span class="stars">★★★★${p.rating >= 5 ? '★' : '☆'}</span>
+              <span class="rating-count">${p.rating} (${p.reviews})</span>
+            </div>
+            <div class="product-price">
+              <span class="price-current">₹${p.price.toLocaleString('en-IN')}</span>
+              ${p.oldPrice ? `<span class="price-old">₹${p.oldPrice.toLocaleString('en-IN')}</span>` : ''}
+              ${p.oldPrice ? `<span class="price-save">Save ₹${(p.oldPrice - p.price).toLocaleString('en-IN')}</span>` : ''}
+            </div>
+            <div class="product-colors">
+              ${p.colors.map(c => `<div class="product-color-dot" style="background:${c}"></div>`).join('')}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openModal(id) {
+      currentProduct = products.find(p => p.id === id);
+      if (!currentProduct) return;
+      document.getElementById('modal-icon').textContent = currentProduct.icon;
+      document.getElementById('modal-cat').textContent = currentProduct.category === 'tops' ? 'Tops & Tees' : currentProduct.category.charAt(0).toUpperCase()+currentProduct.category.slice(1);
+      document.getElementById('modal-name').textContent = currentProduct.name;
+      document.getElementById('modal-price').innerHTML = currentProduct.oldPrice
+        ? `<del>₹${currentProduct.oldPrice.toLocaleString('en-IN')}</del> <span class="sale">₹${currentProduct.price.toLocaleString('en-IN')}</span>`
+        : `₹${currentProduct.price.toLocaleString('en-IN')}`;
+      document.getElementById('modal-desc').textContent = currentProduct.desc;
+      document.getElementById('qty-input').value = 1;
+      document.getElementById('modal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('open');
+    }
+
+    function addToCartFromModal() {
+      cartCount++;
+      document.getElementById('cart-count').textContent = cartCount;
+      closeModal();
+      const btn = document.querySelector('.nav-cart');
+      btn.style.background = '#2a8a2a';
+      setTimeout(() => btn.style.background = '', 800);
+    }
+
+    function selectSize(el) {
+      el.parentElement.querySelectorAll('.modal-size').forEach(s => s.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function changeQty(delta) {
+      const input = document.getElementById('qty-input');
+      const newVal = Math.max(1, Math.min(10, parseInt(input.value) + delta));
+      input.value = newVal;
+    }
+
+    function setView(v) {
+      currentView = v;
+      const grid = document.getElementById('products-grid');
+      grid.classList.toggle('list-view', v === 'list');
+      document.getElementById('grid-btn').classList.toggle('active', v === 'grid');
+      document.getElementById('list-btn').classList.toggle('active', v === 'list');
+    }
+
+    function filterCategory(cat, el) {
+      document.querySelectorAll('.filter-opt').forEach(o => o.classList.remove('active'));
+      el.classList.add('active');
+      const filtered = cat === 'all' ? products : products.filter(p => p.category === cat);
+      renderProducts(filtered);
+      document.getElementById('showing-count').textContent = filtered.length;
+    }
+
+    function toggleFilter(el) { el.classList.toggle('active'); }
+    function toggleSize(el) { el.classList.toggle('active'); }
+    function removeFilter(el) { el.parentElement.remove(); }
+    function resetFilters() {
+      document.querySelectorAll('.filter-opt').forEach((o,i) => { o.classList.toggle('active', i === 0); });
+      document.querySelectorAll('.size-pill').forEach(p => p.classList.remove('active'));
+      renderProducts(products);
+    }
+
+    function updatePrice(val) {
+      const formatted = parseInt(val).toLocaleString('en-IN');
+      document.getElementById('price-label').textContent = '₹' + formatted;
+    }
+
+    function sortProducts(val) {
+      let sorted = [...products];
+      if (val === 'price-asc') sorted.sort((a,b) => a.price - b.price);
+      else if (val === 'price-desc') sorted.sort((a,b) => b.price - a.price);
+      else if (val === 'newest') sorted.sort((a,b) => (b.badge === 'new') - (a.badge === 'new'));
+      else if (val === 'rating') sorted.sort((a,b) => b.rating - a.rating);
+      renderProducts(sorted);
+    }
+
+    document.getElementById('modal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    renderProducts(products);
+  </script>
+</body>
+</html>
